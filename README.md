@@ -1,4 +1,17 @@
-[![CUDA](https://shields.io)](https://nvidia.com)
+<p align="left">
+  <!-- NVIDIA / CUDA -->
+  <img src="https://simpleicons.org" alt="CUDA" width="45" height="45" />
+  &nbsp;&nbsp;
+  <!-- OpenCV -->
+  <img src="https://jsdelivr.net" alt="OpenCV" width="45" height="45" />
+  &nbsp;&nbsp;
+  <!-- ONNX -->
+  <img src="https://simpleicons.org" alt="ONNX" width="45" height="45" />
+  &nbsp;&nbsp;
+  <!-- PyTorch (for ResNet) -->
+  <img src="https://jsdelivr.net" alt="ResNet / PyTorch" width="45" height="45" />
+</p>
+
 
 
 
