@@ -1,4 +1,4 @@
-![CUDA](https://shields.io)   ![CUDA 12.6](https://shields.io)   [![CUDA](https://shields.io)](https://nvidia.com)
+[![CUDA](https://shields.io)](https://nvidia.com)
 
 
 # `cuda-vision-pipeline` — Real-Time Multithreaded C++17 & CUDA Vision Engine
