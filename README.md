@@ -4,6 +4,7 @@
 ![ONNX](https://shields.io)
 ![ResNet](https://shields.io)
 
+[![Tech Stack](https://skillicons.dev)](https://skillicons.dev)
 
 
 
