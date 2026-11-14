@@ -1,5 +1,6 @@
 ![C++17](https://shields.io)
-![CUDA](./cuda.svg)
+![cuda](https://github.com/user-attachments/assets/cb9b8d0c-f8e5-43db-b79a-f31ec6d32c32)
+
 ![OpenCV](https://shields.io)
 ![ONNX](https://shields.io)
 ![ResNet](https://shields.io)
