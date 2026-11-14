@@ -77,7 +77,7 @@ Designed around real-time robotics and edge visual perception constraints: zero 
 
 ### Compile & Execute
 ```bash
-git clone https://github.com<your-username>/cuda-vision-pipeline.git
+git clone https://github.comragulk143/cuda-vision-pipeline.git
 cd cuda-vision-pipeline
 mkdir -p build && cd build
 cmake ..
