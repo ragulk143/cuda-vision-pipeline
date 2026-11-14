@@ -1,6 +1,7 @@
 [![CUDA](https://shields.io)](https://nvidia.com)
 
 
+
 # `cuda-vision-pipeline` — Real-Time Multithreaded C++17 & CUDA Vision Engine
 
 A low-latency, multithreaded computer vision and GPU inference pipeline engineered from scratch in **Modern C++17**, **NVIDIA CUDA C++ (`SM_86`)**, and **OpenCV 4**, built and benchmarked on an **NVIDIA GeForce RTX 3050 Laptop GPU (6 GB VRAM)**.
