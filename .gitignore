@@ -3,3 +3,8 @@ build/
 *.engine
 *.trt
 .vscode/
+
+# Nsight profiler traces
+*.nsys-rep
+*.sqlite
+*.ncu-rep
