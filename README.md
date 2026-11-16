@@ -11,6 +11,10 @@ Designed around real-time robotics and edge visual perception constraints: zero 
 
 
 
+https://github.com/user-attachments/assets/22729453-b0aa-483a-804e-270c505c1c69
+
+
+
 ## 1. System Architecture
 
 ```text
