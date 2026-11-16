@@ -1,3 +1,4 @@
+[![DOI](https://zenodo.org)](https://doi.org/10.5281/zenodo.24287334)
 
 # `cuda-vision-pipeline` — Real-Time Multithreaded C++17 & CUDA Vision Engine
 
