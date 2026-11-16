@@ -65,3 +65,5 @@ Time (%)  Total Time (ns)  Num Calls   Avg (ns)   Med (ns)   Min (ns)  Max (ns) 
 ### v4 Key Engineering Takeaways
 - **1080p60 MP4 Performance:** Achieving **446.03 FPS** (headless) and **125.10 FPS** (with split-screen WSLg GUI rendering) with zero dropped frames.
 - **Live Webcam Integration:** USBIP V4L2 `MJPG` streaming maintains stable processing speeds constrained cleanly by the hardware sensor rate (**15.69 FPS**).
+## v5 — Deep Learning Inference Summary
+For complete tabular metrics across ResNet-50 and MobileNetV3-Large (covering batch sizes 1, 8, and 32 alongside latency and throughput statistics), please refer to the full structured documentation and tracking logs in your repository's source files.

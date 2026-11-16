@@ -190,3 +190,34 @@ sudo chmod 666 /dev/video* && ./vision_pipeline --source 0
 | **1080p60 MP4 (Split-Screen HUD)** | Pre-Allocated Pinned ROI Stitch + SIMD `cv::pyrDown` WSLg Render | 300 / 300 | 0 (0%) | 0.524 ms | 11.932 ms / 16.698 ms | **125.10 FPS** |
 | **720p Live Webcam (`MJPG` HUD)** | V4L2 `MJPG` (`usbipd-win`) + Real-Time Split-Screen Sobel HUD | 717 / 717 | 0 (0%) | 2.680 ms | 7.028 ms / 9.050 ms | **15.69 FPS** *(sensor-bound)* |
 
+## v5 — Zero-Copy GPU Deep Learning Inference (ONNX Runtime CUDAExecutionProvider)
+
+### What Was Built & Optimized
+- **Custom CUDA NCHW Tensor Preprocessing Kernel (`bgr_resize_norm_nchw_kernel`):** Bilinearly resizes device BGR frames to `224×224`, converts `BGR → RGB`, and applies ImageNet normalization into `FP32` NCHW VRAM tensors.
+- **Zero-Copy GPU `Ort::IoBinding` Engine (`include/onnx_engine.hpp`):** Binds `d_tensor[slot]` directly in device VRAM for **ResNet-50 (`98 MB`)** and **MobileNetV3-Large (`~22 MB`)** on the RTX 3050 (`SM_86`).
+- **Dynamic Batch Throughput Scaling (`--batch 1 | 8 | 32`):** Benchmarked end-to-end latency and multi-batch scaling.
+
+### How to Run (v5 CLI Modes)
+```bash
+# 1. Synthetic 1080p + ResNet-50 ONNX GPU (Batch=1)
+./vision_pipeline
+
+# 2. 1080p60 MP4 + ResNet-50 ONNX GPU (Headless vs. Split-Screen HUD)
+./vision_pipeline --source ../data/sample-5s.mp4 --headless
+./vision_pipeline --source ../data/sample-5s.mp4
+
+# 3. MobileNetV3-Large (~22 MB) Dynamic Batch Scaling (Batch 1 / 8 / 32)
+./vision_pipeline --model ../models/mobilenet_v3_large.onnx --batch 1 --frames 100
+./vision_pipeline --model ../models/mobilenet_v3_large.onnx --batch 8 --frames 100
+./vision_pipeline --model ../models/mobilenet_v3_large.onnx --batch 32 --frames 100
+
+# 4. Live V4L2 Webcam + Sobel + MobileNetV3-Large Split-Screen HUD
+sudo chmod 666 /dev/video* && ./vision_pipeline --source 0 --model ../models/mobilenet_v3_large.onnx
+```
+
+### v5 Measured Benchmarks Summary (NVIDIA RTX 3050 SM_86)
+* **ResNet-50 (`98 MB`) Batch 1:** `117.39 FPS` (Synthetic), `124.25 FPS` (Headless MP4), `98.29 FPS` (Split-Screen HUD).
+* **MobileNetV3-Large (`~22 MB`) Batch 1:** `177.98 FPS` (`15.708 ms` E2E p50).
+* **MobileNetV3-Large (`~22 MB`) Batch 8:** `642.80 img/s` (`80.35 batches/s`, `10.539 ms` ONNX p50).
+* **MobileNetV3-Large (`~22 MB`) Batch 32:** `801.28 img/s` (`25.04 batches/s`, `38.189 ms` ONNX p50).
+* **MobileNetV3-Large (`~22 MB`) 720p Live Webcam HUD:** `15.35 FPS` (sensor-bound, `0 dropped`).

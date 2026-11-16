@@ -9,3 +9,4 @@ build/
 *.sqlite
 *.ncu-rep
 data/
+models/*.onnx
