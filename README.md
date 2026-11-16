@@ -6,6 +6,10 @@ A low-latency, multithreaded computer vision and GPU inference pipeline engineer
 Designed around real-time robotics and edge visual perception constraints: zero frame drops, deterministic RAII memory management, shared-memory GPU tiling, and pipelined CPU–GPU execution.
 
 ---
+<img width="1275" height="675" alt="image" src="https://github.com/user-attachments/assets/a2014a77-918a-4a27-bed4-1fb602d19c8f" />
+<img width="1500" height="720" alt="image" src="https://github.com/user-attachments/assets/e9c42342-037e-43b7-9cb6-dea8ad504499" />
+
+
 
 ## 1. System Architecture
 
