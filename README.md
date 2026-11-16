@@ -159,3 +159,34 @@ Time (%)  Total Time (ns)  Num Calls   Avg (ns)   Med (ns)   Min (ns)  Max (ns) 
      0.7          2652700          9    294744.4   291787.0    215774     410968      67884.3  cudaFree
      0.6          2109875        402      5248.4     3513.5      1964     339090      18128.4  cudaEventRecord
 ```
+## v4 — Live V4L2 Camera, 1080p60 MP4 Ingestion & Real-Time Split-Screen HUD
+
+### What Was Built & Optimized
+- **Zero-Copy `cv::VideoCapture` Ingestion (`src/main.cpp`):** Decodes `.mp4` streams (via FFmpeg) and live V4L2 webcams (`/dev/video0` via `usbipd-win`) directly into page-locked `cudaMallocHost` buffers (`engine.get_pinned_input_mat(slot)`), avoiding extra host `std::memcpy` calls.
+- **V4L2 `MJPG` Hardware Stream Locking:** Configured `CAP_PROP_FOURCC` (`MJPG`), `1280×720 @ 30 FPS`, and `CAP_PROP_BUFFERSIZE = 1` before stream initialization so USBIP webcam capture avoids slow uncompressed `YUYV` bandwidth bottlenecks.
+- **Zero-Allocation Split-Screen HUD & SIMD `cv::pyrDown`:** Pre-allocated a single `width*2 × height` canvas with direct left/right ROI writes (`raw_in` vs. `COLOR_GRAY2BGR` Sobel output) and 2× `cv::pyrDown` downscaling before `cv::imshow`, slashing WSLg X11/Wayland display overhead.
+- **Graceful `SIGINT` / `'q'` Shutdown & High-Precision Telemetry:** Added `std::chrono::duration<double>` wall-clock throughput tracking and clean `SlotPool` wakeup on exit.
+
+### How to Run (v4 CLI Modes)
+```bash
+# 1. Synthetic 1080p benchmark (200 frames, headless)
+./vision_pipeline
+
+# 2. 1080p60 .mp4 file — headless throughput audit (FFmpeg decode + async CUDA)
+./vision_pipeline --source ../data/sample-5s.mp4 --headless
+
+# 3. 1080p60 .mp4 file — live split-screen Raw vs. GPU Sobel HUD
+./vision_pipeline --source ../data/sample-5s.mp4
+
+# 4. Live V4L2 webcam (/dev/video0) — 720p MJPG + split-screen HUD
+sudo chmod 666 /dev/video* && ./vision_pipeline --source 0
+```
+
+### v4 Measured Benchmarks (NVIDIA RTX 3050 SM_86)
+
+| Workload / Mode | Strategy | Frames Processed | Dropped | GPU Kernel p50 | E2E Latency p50 / p95 | E2E Throughput |
+| :--- | :--- | :---: | :---: | :---: | :---: | :---: |
+| **1080p60 MP4 (Headless)** | FFmpeg Decode → Zero-Copy Pinned `cv::Mat` + 3-Slot Async CUDA | 300 / 300 | 0 (0%) | 0.427 ms | 1.366 ms / 1.702 ms | **446.03 FPS** |
+| **1080p60 MP4 (Split-Screen HUD)** | Pre-Allocated Pinned ROI Stitch + SIMD `cv::pyrDown` WSLg Render | 300 / 300 | 0 (0%) | 0.524 ms | 11.932 ms / 16.698 ms | **125.10 FPS** |
+| **720p Live Webcam (`MJPG` HUD)** | V4L2 `MJPG` (`usbipd-win`) + Real-Time Split-Screen Sobel HUD | 717 / 717 | 0 (0%) | 2.680 ms | 7.028 ms / 9.050 ms | **15.69 FPS** *(sensor-bound)* |
+

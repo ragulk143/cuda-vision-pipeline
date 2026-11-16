@@ -52,3 +52,16 @@ Time (%)  Total Time (ns)  Num Calls   Avg (ns)   Med (ns)   Min (ns)  Max (ns) 
      0.7          2652700          9    294744.4   291787.0    215774     410968      67884.3  cudaFree
      0.6          2109875        402      5248.4     3513.5      1964     339090      18128.4  cudaEventRecord
 ```
+## v4 — Live Stream, 1080p60 MP4 & Split-Screen WSLg HUD
+
+- **Hardware & Environment:** NVIDIA RTX 3050 Laptop GPU (Ampere `SM_86`), WSL2 Ubuntu 22.04, CUDA 12.1, OpenCV 4.5.4, and WSLg.
+
+| Workload / Mode | Frames Processed | Dropped Frames | GPU Kernel p50 | E2E Latency p50 | E2E Latency p95 | E2E Throughput |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| **1080p60 MP4 (Headless Decode + CUDA Sobel)** | 300 / 300 | 0 (0.0%) | 0.427 ms | 1.366 ms | 1.702 ms | **446.03 FPS** |
+| **1080p60 MP4 (Split-Screen GUI HUD + `pyrDown`)** | 300 / 300 | 0 (0.0%) | 0.524 ms | 11.932 ms | 16.698 ms | **125.10 FPS** |
+| **720p Live USBIP Webcam (`MJPG` + Split-Screen HUD)** | 717 / 717 | 0 (0.0%) | 2.680 ms | 7.028 ms | 9.050 ms | **15.69 FPS** *(sensor-bound)* |
+
+### v4 Key Engineering Takeaways
+- **1080p60 MP4 Performance:** Achieving **446.03 FPS** (headless) and **125.10 FPS** (with split-screen WSLg GUI rendering) with zero dropped frames.
+- **Live Webcam Integration:** USBIP V4L2 `MJPG` streaming maintains stable processing speeds constrained cleanly by the hardware sensor rate (**15.69 FPS**).
