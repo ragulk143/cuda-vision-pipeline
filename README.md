@@ -49,6 +49,10 @@ https://github.com/user-attachments/assets/22729453-b0aa-483a-804e-270c505c1c69
 - [x] **v3 — Asynchronous CUDA Streams & Zero-Copy Host Buffers:**
   - Replaced synchronous `cudaMemcpy` with `cudaMemcpyAsync` across **3 `cudaStreamNonBlocking` queues** (`NUM_SLOTS = 3`) with `SlotPool` synchronization to interleave CPU frame preparation, PCIe H2D/D2H DMA, and GPU kernel execution.
   - Wrapped `h_pinned_bgr_` directly inside `cv::Mat` headers to eliminate intermediate host `std::memcpy` calls, boosting E2E throughput to **1,046.18 FPS** (**22.5×** over v2).
+- [x] **v4 — Live Camera / Video Stream & Visual Output (`cv::VideoCapture` + `cv::imshow`):**
+  - Support `.mp4` video file ingestion and live webcam passthrough in WSL2 via `usbipd-win` (`/dev/video0`) with zero-copy `cap.read(pinned_mat)` and real-time side-by-side raw vs. GPU Sobel edge visualization + live HUD.
+- [x] **v5 — Deep Learning Inference Integration (ONNX Runtime GPU `< 80 MB`):**
+  - Integrate **ONNX Runtime (`CUDAExecutionProvider`)** into Thread 2 with a custom CUDA `bgr_to_nchw_norm_kernel` for lightweight models under 80 MB (e.g., **MobileNetV3-Large ~21 MB** / **DeepLabV3-MobileNetV3 ~42 MB**), benchmarking **Batch 1 / 8 / 32** latency and VRAM usage.
 
 ---
 
@@ -76,10 +80,6 @@ Profiled across 200 1080p frames (plus 1 warmup frame):
 
 ## 4. Remaining Roadmap (Next Milestones)
 
-- [ ] **v4 — Live Camera / Video Stream & Visual Output (`cv::VideoCapture` + `cv::imshow`):**
-  - Support `.mp4` video file ingestion and live webcam passthrough in WSL2 via `usbipd-win` (`/dev/video0`) with zero-copy `cap.read(pinned_mat)` and real-time side-by-side raw vs. GPU Sobel edge visualization + live HUD.
-- [ ] **v5 — Deep Learning Inference Integration (ONNX Runtime GPU `< 80 MB`):**
-  - Integrate **ONNX Runtime (`CUDAExecutionProvider`)** into Thread 2 with a custom CUDA `bgr_to_nchw_norm_kernel` for lightweight models under 80 MB (e.g., **MobileNetV3-Large ~21 MB** / **DeepLabV3-MobileNetV3 ~42 MB**), benchmarking **Batch 1 / 8 / 32** latency and VRAM usage.
 - [ ] **v6 — Native TensorRT C++ Engine (`nvinfer1` FP16):**
   - Compile the `.onnx` model into a serialized TensorRT `.engine` plan targeting RTX 3050 `SM_86` Tensor Cores (`FP16`) and execute `enqueueV3` directly on the existing `cudaStream_t` queues.
 
