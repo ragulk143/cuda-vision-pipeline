@@ -58,8 +58,7 @@ https://github.com/user-attachments/assets/22729453-b0aa-483a-804e-270c505c1c69
 
 =======
 - [x] **Intel® OpenVINO™ CPU Inference Benchmark:** ADDED
->>>>>>> 12e1699 (Add OpenVINO CPU inference benchmark for MobileNetV3-Large and ResNet-50)
----
+
 
 ## 3. Optimization Strategies & Measured RTX 3050 Benchmarks
 
@@ -249,3 +248,17 @@ Reproduce the benchmark locally:
 python3 scripts/openvino_bench.py
 ```
 
+### Live V4L2 Webcam + CPU SIMD Sobel + OpenVINO™ Split-Screen HUD Audit (1,577 Frames)
+
+To compare real-world edge execution against the v5 RTX 3050 live webcam pipeline (`15.35 FPS` sensor-bound), `scripts/openvino_live_cam.py` runs concurrent 720p MJPG capture, SIMD Sobel edge detection, and OpenVINO™ MobileNetV3-Large inference purely on the **Intel® Core™ i5-12450H** CPU:
+
+| Pipeline Stage | Avg Throughput (FPS) | Latency p50 | Latency p95 | Notes |
+| :--- | :---: | :---: | :---: | :--- |
+| **CPU SIMD Sobel Kernel** | **252.12 FPS** | 3.98 ms | 5.50 ms | AVX2-accelerated 3×3 spatial gradient |
+| **OpenVINO™ MobileNetV3-Large** | **49.94 FPS** | 18.62 ms | 33.44 ms | Concurrent with Sobel & WSLg display |
+| **Live Camera Split-Screen HUD** | **16.69 FPS** | 57.05 ms | 95.99 ms | Matches RTX 3050 live sensor ceiling (`15.35 FPS`) |
+
+Run live webcam split-screen demo:
+```bash
+python3 scripts/openvino_live_cam.py
+```
