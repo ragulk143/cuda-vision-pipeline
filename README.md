@@ -50,11 +50,15 @@ https://github.com/user-attachments/assets/22729453-b0aa-483a-804e-270c505c1c69
 - [x] **v3 — Asynchronous CUDA Streams & Zero-Copy Host Buffers:**
   - Replaced synchronous `cudaMemcpy` with `cudaMemcpyAsync` across **3 `cudaStreamNonBlocking` queues** (`NUM_SLOTS = 3`) with `SlotPool` synchronization to interleave CPU frame preparation, PCIe H2D/D2H DMA, and GPU kernel execution.
   - Wrapped `h_pinned_bgr_` directly inside `cv::Mat` headers to eliminate intermediate host `std::memcpy` calls, boosting E2E throughput to **1,046.18 FPS** (**22.5×** over v2).
+<<<<<<< HEAD
 - [x] **v4 — Live Camera / Video Stream & Visual Output (`cv::VideoCapture` + `cv::imshow`):**
   - Support `.mp4` video file ingestion and live webcam passthrough in WSL2 via `usbipd-win` (`/dev/video0`) with zero-copy `cap.read(pinned_mat)` and real-time side-by-side raw vs. GPU Sobel edge visualization + live HUD.
 - [x] **v5 — Deep Learning Inference Integration (ONNX Runtime GPU `< 80 MB`):**
   - Integrate **ONNX Runtime (`CUDAExecutionProvider`)** into Thread 2 with a custom CUDA `bgr_to_nchw_norm_kernel` for lightweight models under 80 MB (e.g., **MobileNetV3-Large ~21 MB** / **DeepLabV3-MobileNetV3 ~42 MB**), benchmarking **Batch 1 / 8 / 32** latency and VRAM usage.
 
+=======
+- [x] **Intel® OpenVINO™ CPU Inference Benchmark:** ADDED
+>>>>>>> 12e1699 (Add OpenVINO CPU inference benchmark for MobileNetV3-Large and ResNet-50)
 ---
 
 ## 3. Optimization Strategies & Measured RTX 3050 Benchmarks
@@ -230,3 +234,18 @@ sudo chmod 666 /dev/video* && ./vision_pipeline --source 0 --model ../models/mob
 * **MobileNetV3-Large (`~22 MB`) Batch 8:** `642.80 img/s` (`80.35 batches/s`, `10.539 ms` ONNX p50).
 * **MobileNetV3-Large (`~22 MB`) Batch 32:** `801.28 img/s` (`25.04 batches/s`, `38.189 ms` ONNX p50).
 * **MobileNetV3-Large (`~22 MB`) 720p Live Webcam HUD:** `15.35 FPS` (sensor-bound, `0 dropped`).
+### NEW BENCHMARK
+## Intel® OpenVINO™ CPU Inference Benchmark
+
+To evaluate edge deployment without a discrete GPU, the ONNX models were compiled and benchmarked using the **OpenVINO™ Runtime** (`PERFORMANCE_HINT=LATENCY`) on a **12th Gen Intel® Core™ i5-12450H** CPU (leveraging AVX2 & AVX-VNNI vector instructions):
+
+| Model | Execution Backend | Hardware | Throughput (FPS) | Latency (ms/frame) |
+| :--- | :--- | :--- | :---: | :---: |
+| **MobileNetV3-Large** | OpenVINO™ Runtime (FP32) | Intel® Core™ i5-12450H | **121.65 FPS** | **8.22 ms** |
+| **ResNet-50** | OpenVINO™ Runtime (FP32) | Intel® Core™ i5-12450H | **20.48 FPS** | **48.84 ms** |
+
+Reproduce the benchmark locally:
+```bash
+python3 scripts/openvino_bench.py
+```
+
